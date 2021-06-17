@@ -51,8 +51,6 @@ func getHome(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-
-
 Run : go run main.go
 
 Browser : localhost:8080
@@ -154,7 +152,6 @@ func getHome(w http.ResponseWriter, r *http.Request) {
 
 }
 ```
-
 
 5.Request localhost:8080 you will get some Response
 
@@ -326,6 +323,7 @@ func (s *Server) getHome(w http.ResponseWriter, r *http.Request) {
  }
 }
 ```
+
 home.html
 
 ```html
@@ -342,3 +340,44 @@ home.html
   </body>
 </html>
 ```
+
+## File Structure So Far
+
+![p2](https://user-images.githubusercontent.com/37740006/122342685-baa63280-cf66-11eb-937f-3365e9576f08.png)
+
+## Add Desing to the Site Tailwindcss
+
+1. First add static file loader in the handler.This will allow to use staic files js,css other design stuff
+
+handler.go
+
+```go
+package handler
+
+import (
+ "net/http"
+
+ "github.com/gorilla/mux"
+)
+
+type (
+ Server struct {
+ }
+)
+
+func NewServer() (*mux.Router, error) {
+
+ s := &Server{}
+
+ r := mux.NewRouter()
+ r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./assets/"))))
+ r.HandleFunc("/", s.getHome).Methods("GET")
+ return r, nil
+}
+```
+
+### [Follow This Link](https://themesberg.com/knowledge-center/tailwind-css/html)
+
+## File Structure SO far
+
+![p3Small](https://user-images.githubusercontent.com/37740006/122346540-e3c8c200-cf6a-11eb-84a2-b8d808217464.png)
