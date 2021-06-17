@@ -1,19 +1,19 @@
 package main
 
 import (
-	"html/template"
+	"Go-Project-With-Postgres/handler"
 	"log"
 	"net/http"
-	"time"
 
-	"github.com/gorilla/mux"
+	"time"
 )
 
 func main() {
 
-	r := mux.NewRouter()
-
-	r.HandleFunc("/", getHome).Methods("GET")
+	r, err := handler.NewServer()
+	if err != nil {
+		log.Fatal("Handler not Found")
+	}
 
 	srv := &http.Server{
 		Handler:      r,
@@ -22,17 +22,5 @@ func main() {
 		ReadTimeout:  15 * time.Second,
 	}
 	log.Fatal(srv.ListenAndServe())
-
-}
-
-func getHome(w http.ResponseWriter, r *http.Request) {
-	tmp, _ := template.New("home.html").ParseFiles("./assets/templates/home.html")
-
-	err := tmp.Execute(w, nil)
-
-	if err != nil {
-		log.Println("Error Executing template : ", err)
-		return
-	}
 
 }
