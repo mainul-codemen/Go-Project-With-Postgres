@@ -6,9 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/static/css/app.min.css" />
     <title>Home</title>
-
-        <h1 class="text-blue-500 text-center">Hello </h1>
-    <p class="text-center">I am years old.</p>
+  <h1 class="text-blue-500 text-center">Hello {{title .Name}}</h1>
+    <p class="text-center">I am {{.Age}} years old.</p>
   </head>
   <body>
        
