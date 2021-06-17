@@ -381,3 +381,181 @@ func NewServer() (*mux.Router, error) {
 ## File Structure SO far
 
 ![p3Small](https://user-images.githubusercontent.com/37740006/122346540-e3c8c200-cf6a-11eb-84a2-b8d808217464.png)
+
+## Connect with POSTGRES DB
+
+1. Create a Method inside main.go file
+
+```go
+func newDBFromConfig() string {
+ dbParams := " " + "user=postgres"
+ dbParams += " " + "host=localhost"
+ dbParams += " " + "port=5432"
+ dbParams += " " + "dbname=practice"
+ dbParams += " " + "password=0"
+ dbParams += " " + "sslmode=disable"
+
+ return dbParams
+}
+```
+
+2. Create storage/postgres/postgres.go
+
+```go
+package postgres
+
+import (
+ "github.com/jmoiron/sqlx"
+ _ "github.com/lib/pq"
+ "github.com/pkg/errors"
+)
+
+type Storage struct {
+ db *sqlx.DB
+}
+
+func NewStorage(dbstring string) (*Storage, error) {
+ db, err := sqlx.Connect("postgres", dbstring)
+ if err != nil {
+  return nil, errors.Wrapf(err, "unable to connect to postgres '%s'", dbstring)
+ }
+ err = db.Ping()
+ if err != nil {
+  return nil, err
+ }
+ return &Storage{db: db}, nil
+}
+
+```
+
+2. Call newDBFromConfig()
+
+main.go
+
+```go
+package main
+
+import (
+ "Go-Project-With-Postgres/handler"
+ "Go-Project-With-Postgres/storage/postgres"
+ "log"
+ "net/http"
+
+ "time"
+)
+
+func main() {
+ dbString := newDBFromConfig()
+ store, err := postgres.NewStorage(dbString)
+
+ if err != nil {
+  log.Fatal(err)
+ }
+
+ r, err := handler.NewServer(store)
+ if err != nil {
+  log.Fatal("Handler not Found")
+ }
+
+ srv := &http.Server{
+  Handler:      r,
+  Addr:         "127.0.0.1:8080",
+  WriteTimeout: 15 * time.Second,
+  ReadTimeout:  15 * time.Second,
+ }
+ log.Fatal(srv.ListenAndServe())
+
+}
+
+func newDBFromConfig() string {
+ dbParams := " " + "user=postgres"
+ dbParams += " " + "host=localhost"
+ dbParams += " " + "port=5432"
+ dbParams += " " + "dbname=practice"
+ dbParams += " " + "password=0"
+ dbParams += " " + "sslmode=disable"
+
+ return dbParams
+}
+```
+
+3. Create storage.go file inside postgres folder
+
+```go
+package storage
+
+// import "time"
+
+type (
+ User struct {
+  ID        int32     `db:"id"`
+  FirstName string    `db:"first_name"`
+  LastName  string    `db:"last_name"`
+  Username  string    `db:"username"`
+  Email     string    `db:"email"`
+  /* IsActive  bool      `db:"is_active"`
+  IsAdmin   bool      `db:"is_admin"`
+  CreatedAt time.Time `db:"created_at"`
+  UpdatedAt time.Time `db:"updated_at"` */
+ }
+)
+```
+
+4. Update handler.go
+
+```go
+package handler
+
+import (
+ "Go-Project-With-Postgres/storage/postgres"
+ "html/template"
+ "net/http"
+
+ "github.com/Masterminds/sprig"
+ "github.com/gorilla/mux"
+)
+
+type (
+ Server struct {
+  templates *template.Template
+  store     *postgres.Storage
+ }
+)
+
+func NewServer(st *postgres.Storage) (*mux.Router, error) {
+
+ s := &Server{
+  store: st,
+ }
+
+ if err := s.parseTemplates(); err != nil {
+  return nil, err
+ }
+
+ r := mux.NewRouter()
+ r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./assets/"))))
+ r.HandleFunc("/", s.getHome).Methods("GET")
+ return r, nil
+}
+
+func (s *Server) parseTemplates() error {
+ templates := template.New("templates").Funcs(template.FuncMap{
+  "strrev": func(str string) string {
+   n := len(str)
+   runes := make([]rune, n)
+   for _, rune := range str {
+    n--
+    runes[n] = rune
+   }
+   return string(runes[n:])
+  },
+ }).Funcs(sprig.FuncMap())
+
+ tmpl, err := templates.ParseGlob("assets/templates/*.html")
+ if err != nil {
+  return err
+ }
+ s.templates = tmpl
+ return nil
+}
+```

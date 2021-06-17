@@ -2,6 +2,7 @@ package main
 
 import (
 	"Go-Project-With-Postgres/handler"
+	"Go-Project-With-Postgres/storage/postgres"
 	"log"
 	"net/http"
 
@@ -9,8 +10,14 @@ import (
 )
 
 func main() {
+	dbString := newDBFromConfig()
+	store, err := postgres.NewStorage(dbString)
 
-	r, err := handler.NewServer()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	r, err := handler.NewServer(store)
 	if err != nil {
 		log.Fatal("Handler not Found")
 	}
@@ -23,4 +30,15 @@ func main() {
 	}
 	log.Fatal(srv.ListenAndServe())
 
+}
+
+func newDBFromConfig() string {
+	dbParams := " " + "user=postgres"
+	dbParams += " " + "host=localhost"
+	dbParams += " " + "port=5432"
+	dbParams += " " + "dbname=practice"
+	dbParams += " " + "password=0"
+	dbParams += " " + "sslmode=disable"
+
+	return dbParams
 }

@@ -1,34 +1,38 @@
 package handler
 
 import (
+	"Go-Project-With-Postgres/storage"
+	"fmt"
 	"log"
 	"net/http"
-	"strings"
-	"text/template"
 )
 
 type (
 	templateData struct {
-		Name string
-		Age  int
+		User storage.User
 	}
 )
 
 func (s *Server) getHome(w http.ResponseWriter, r *http.Request) {
-	funcMap := template.FuncMap{
-		"title": func(name string) string {
-			return strings.Title(name)
-		},
+	tmp := s.templates.Lookup("home.html")
+	if tmp == nil {
+		log.Println("unable to look home.html")
+		return
 	}
 
-	tmp, _ := template.New("home.html").Funcs(funcMap).ParseFiles("./assets/templates/home.html")
+	user, err := s.store.GetUser(1)
+	if err != nil {
+		log.Println("unable to get user: ", err)
+		return
+	}
+
+	fmt.Printf("%+v", user)
 
 	tmpData := templateData{
-		Name: "rahim karim",
-		Age:  23,
+		User: *user,
 	}
 
-	err := tmp.Execute(w, tmpData)
+	err = tmp.Execute(w, tmpData)
 	if err != nil {
 		log.Println("Error executing template :", err)
 		return
