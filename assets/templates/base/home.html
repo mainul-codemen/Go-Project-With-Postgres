@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home</title>
+    <link rel="stylesheet" href="{{ assetHash "/assets/css/app.min.css"}}">
+  </head>
+  <body>
+    <h1 class="text-center text-blue-500">This our home</h1>
+    <h3 class="text-green-600">
+      Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dicta porro,
+      eligendi a sed minus tenetur maxime incidunt iusto suscipit asperiores
+      ipsa inventore ratione, quisquam maiores eos beatae quaerat, aut dolor.
+    </h3>
+
+    <table>
+      <tr>
+        <th>FirstName</th>
+        <th>LastName</th>
+      </tr>
+      {{range .User}}
+      <tr>
+        <td>{{.FirstName}}</td>
+        <td>{{.LastName}}</td>
+      </tr>
+      {{end}}
+    </table>
+  </body>
+</html>

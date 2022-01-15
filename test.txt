@@ -13,6 +13,11 @@ go run migrations/migrate.go up
     go run migrations/migrate.go create aritcles go
     
 
+## Mysql and postgres connection string
+
+// db, err := sql.Open("mysql", "username:password@tcp(127.0.0.1:3306)/test")
+	// DATABASE_URL=postgres://{user}:{password}@{hostname}:{port}/{database-name}
+	// return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
 c + shift + p = > go test will generate unit test for function
 
 

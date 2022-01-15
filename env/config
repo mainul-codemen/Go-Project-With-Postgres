@@ -1,0 +1,21 @@
+[runtime]
+environment="development"
+loglevel="debug"
+
+[server]
+host="localhost"
+port="3000"
+baseURL="http://localhost:8090"
+
+serverPort = ":8082"
+
+[csrf]
+secure="false"
+secret="1234"
+
+[database]
+host="localhost"
+port="5432"
+dbname="newdb"
+user="postgres"
+password="password"

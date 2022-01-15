@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>User Information</h2>
+<p>Please insert all Information</p>
+
+<form action="/signup"  method="post">
+  {{.CSRFField}}
+
+    <label name="FirstName">First Name:</label><br>
+    <input type="text" name="FirstName"><br>
+   {{with .FormErrors.FirstName}}
+            <p>{{.}}</p>
+           {{end}} 
+
+    <label name="LastName">LastName:</label><br>
+    <input type="text" name="LastName"><br>
+   {{with .FormErrors.LastName}}
+            <p>{{.}}</p>
+           {{end}} 
+    <label name="Username">Username:</label><br>
+    <input type="text" name="Username"><br>
+   {{with .FormErrors.Username}}
+            <p>{{.}}</p>
+           {{end}} 
+    <label name="Email">Email:</label><br>
+    <input type="text"  name="Email" ><br>
+   {{with .FormErrors.Email}}
+            <p>{{.}}</p>
+           {{end}} 
+       <div class="item form-group">
+                <label class="col-form-label col-md-3 col-sm-3 label-align"> Password<span class="required">*</span></label>
+                <div class="col-md-6 col-sm-6 ">
+                  <input type="password" name="Password" id="password" required="" onkeyup='check();' minlength="6" class="form-control" value="{{.Form.Password}}"  >
+                </div>
+                {{with .FormErrors.Password}}
+                    <p>{{.}}</p>
+                {{end}} 
+              </div>
+
+        <div class="item form-group">
+                <label class="col-form-label col-md-3 col-sm-3 label-align">Retype Password<span class="required">*</span></label>
+        <div class="col-md-6 col-sm-6 ">
+                  <input type="password" name="retype_password" id="retype_password" required="" onkeyup='check();'  minlength="6"class="form-control" value="{{.Form.Password}}">
+        </div>
+
+
+    <input type="submit" value="Submit">
+
+</form> 
+<script>
+var password = document.getElementById("password")
+  , retype_password = document.getElementById("retype_password");
+
+function validatePassword(){
+  if(password.value != retype_password.value) {
+    retype_password.setCustomValidity("Passwords Don't Match");
+  } else {
+    retype_password.setCustomValidity('');
+  }
+}
+password.onchange = validatePassword;
+retype_password.onkeyup = validatePassword;
+</script>
+</body>
+</html>
+
